@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pokedex/pages/containers/detail/detail_page.dart';
+import 'package:pokedex/pages/containers/list/list_page.dart';
 import 'generated/i18n.dart';
 import 'utils/routes.dart';
 
@@ -13,11 +15,10 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: [S.delegate],
       supportedLocales: S.delegate.supportedLocales,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+      primarySwatch: Colors.blue,
       ),
-      initialRoute: '/',
-      routes: routes
-      ,
+        initialRoute: '/',
+        routes: routes
     );
   }
 }

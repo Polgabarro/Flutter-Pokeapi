@@ -39,23 +39,20 @@ class PokemonListBloc extends Bloc<ListBlocEvent, ListBlocState> {
           }
           yield PokemonListLoadingMore(currentState.pokemons, currentState.next);
           final response = await repository.getPokemons(nextPokemon: currentState.next);
-
-          if(response.next == null) {
-            yield PokemonListLoaded(currentState.pokemons, null);
-            return;
-          }
-
-          int next = getnextFromURL(response.next);
-          yield PokemonListLoaded(currentState.pokemons + response.results, next);
+          yield PokemonListLoaded(currentState.pokemons + response.results, getnextFromURL(response.next));
         }
       } catch(e) {
-        print(e);
         yield PokemonListError('Error loading Pokemons');
       }
     }
   }
 
   int getnextFromURL(String nextUrl) {
+
+    if(nextUrl == null) {
+      return null;
+    }
+
     final String firstPart = nextUrl.split('offset=')[1];
     final String secondPart = firstPart.split('&limit')[0];
     final int next = int.parse(secondPart);

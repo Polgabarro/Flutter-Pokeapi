@@ -5,7 +5,7 @@ class PokemonItem extends StatelessWidget {
 
   final String imageUrl;
   final String pokemonName;
-  final Function onTap;
+  final void Function() onTap;
 
   const PokemonItem({
     Key key,
@@ -19,19 +19,22 @@ class PokemonItem extends StatelessWidget {
     return Column(
       children: <Widget>[
         ListTile(
-          onTap: (){
-            if (onTap != null) onTap();
-          },
-          leading: CachedNetworkImage(
-            imageUrl: imageUrl,
-            placeholder: (context, url) => Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset('res/images/pokeball.png'),
+          onTap: onTap,
+          leading: Hero(
+            tag: imageUrl,
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              placeholder: (context, url) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset('res/images/pokeball.png'),
+              ),
             ),
           ),
           title: Text(pokemonName),
         ),
-        Divider()
+        const Divider(
+          height: 1,
+        )
       ],
     );
   }

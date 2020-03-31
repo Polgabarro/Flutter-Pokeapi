@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokedex/generated/i18n.dart';
 import 'package:pokedex/models/pokemon_simple_model.dart';
+import 'package:pokedex/pages/containers/detail/detail_page.dart';
 import 'package:pokedex/pages/containers/list/bloc/bloc.dart';
 import 'package:pokedex/pages/widgets/pokemon_item.dart';
 import 'package:pokedex/repositories/poke_api_repository.dart';
@@ -11,7 +12,8 @@ class PokemonList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => PokemonListBloc(PokeApiRepository())..add(GetPokemonsList()),
+      create: (context) =>
+          PokemonListBloc(PokeApiRepository())..add(GetPokemonsList()),
       child: PokemonListContent(),
     );
   }
@@ -60,42 +62,57 @@ class _PokemonListState extends State<PokemonListContent> {
           )
         ],
       ),
-      body: BlocBuilder<PokemonListBloc, ListBlocState>(
-        builder: (context, state) {
-          if (state is InitialPokemonList) {
-            return buildLoading();
-          } else if (state is PokemonListLoaded) {
-            return buildPokemonList(state.pokemons, state.next != null);
-          } else if(state is PokemonListLoadingMore){
-            return buildPokemonList(state.pokemons, true);
+      body: BlocListener<PokemonListBloc, ListBlocState>(
+        listener: (context, state) {
+          if (state is PokemonListError) {
+            Scaffold.of(context)
+                .showSnackBar(SnackBar(content: Text(state.message)));
           }
-          else if (state is PokemonListError) {
-            return Text(state.message);
-          }
-          return buildLoading();
         },
+        child: BlocBuilder<PokemonListBloc, ListBlocState>(
+          builder: (context, state) {
+            if (state is InitialPokemonList) {
+              return buildLoading();
+            } else if (state is PokemonListLoaded) {
+              return buildPokemonList(state.pokemons, state.next != null);
+            } else if (state is PokemonListLoadingMore) {
+              return buildPokemonList(state.pokemons, true);
+            } else if (state is PokemonListError) {
+              return Text(state.message);
+            }
+            return buildLoading();
+          },
+        ),
       ),
     );
   }
 
-  CustomScrollView buildPokemonList(List<PokemonSimpleModel> pokemonList, bool morePokemon) {
+  CustomScrollView buildPokemonList(
+      List<PokemonSimpleModel> pokemonList, bool loading) {
     return CustomScrollView(
       controller: _scrollController,
       slivers: [
         SliverFixedExtentList(
-          itemExtent: 72.0,
+          itemExtent: 57.0,
           delegate:
               SliverChildBuilderDelegate((BuildContext context, int index) {
             if (index < pokemonList.length) {
               return PokemonItem(
-                  onTap: () => print(pokemonList[index].name),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PokemonDetail(pokemonName: pokemonList[index].name, id: (index + 1))
+                      )
+                    );
+                  },
                   imageUrl:
                       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png',
                   pokemonName: pokemonList[index].name.capitalize());
             } else {
               return buildLoading();
             }
-          }, childCount: pokemonList.length + (morePokemon?1:0)),
+          }, childCount: pokemonList.length + (loading ? 1 : 0)),
         )
       ],
     );
@@ -107,7 +124,7 @@ class _PokemonListState extends State<PokemonListContent> {
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
     if (maxScroll - currentScroll <= _scrollThreshold) {
-      if(_pokemonListBloc.state is PokemonListLoaded){
+      if (_pokemonListBloc.state is PokemonListLoaded) {
         _pokemonListBloc.add(GetPokemonsList());
       }
     }
