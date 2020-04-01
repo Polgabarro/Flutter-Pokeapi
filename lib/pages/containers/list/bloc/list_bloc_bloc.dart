@@ -33,8 +33,14 @@ class PokemonListBloc extends Bloc<ListBlocEvent, ListBlocState> {
         }
         // List Loaded
         else if(currentState is PokemonListLoaded){
-          if (currentState.next == null) {
+          if (currentState.next == null && !event.reset) {
             yield PokemonListLoaded(currentState.pokemons, null);
+            return;
+          }
+          if(event.reset) {
+            yield InitialPokemonList(0);
+            final response = await repository.getPokemons(nextPokemon: 0);
+            yield PokemonListLoaded(response.results, getnextFromURL(response.next));
             return;
           }
           yield PokemonListLoadingMore(currentState.pokemons, currentState.next);
@@ -44,6 +50,19 @@ class PokemonListBloc extends Bloc<ListBlocEvent, ListBlocState> {
       } catch(e) {
         yield PokemonListError('Error loading Pokemons');
       }
+    }else if(event is GetPokemonsByType) {
+      if(event.type == (currentState as PokemonListLoaded).type){
+        return;
+      }
+      try {
+        yield InitialPokemonList(0);
+        final response = await repository.getPokemonByType(event.type.url);
+        yield PokemonListLoaded(response, null, type: event.type);
+      }catch(e) {
+        yield PokemonListError('Error loading Pokemons');
+      }
+
+
     }
   }
 

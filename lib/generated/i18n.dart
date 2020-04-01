@@ -21,6 +21,7 @@ class S implements WidgetsLocalizations {
   @override
   TextDirection get textDirection => TextDirection.ltr;
 
+  String get seleciona_el_tipo => "Seleciona el tipo";
   String get title => "Pokémon";
 }
 
@@ -34,6 +35,8 @@ class $es_ES extends S {
   @override
   TextDirection get textDirection => TextDirection.ltr;
 
+  @override
+  String get seleciona_el_tipo => "Seleciona el tipo";
   @override
   String get title => "Pokémon";
 }

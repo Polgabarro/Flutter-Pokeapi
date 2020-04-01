@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:pokedex/models/pokemon_simple_model.dart';
+import 'package:pokedex/models/pokemon_types_model.dart';
 
 abstract class ListBlocState extends Equatable {
   const ListBlocState();
@@ -26,11 +27,12 @@ class PokemonListLoadingMore extends ListBlocState {
 class PokemonListLoaded extends ListBlocState {
   final List<PokemonSimpleModel> pokemons;
   final int next;
+  final PokeType type;
 
-  PokemonListLoaded(this.pokemons, this.next);
+  PokemonListLoaded(this.pokemons, this.next, {this.type});
 
   @override
-  List<Object> get props => [pokemons, this.next];
+  List<Object> get props => [pokemons, next, type];
 }
 
 class PokemonListError extends ListBlocState {

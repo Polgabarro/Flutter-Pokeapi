@@ -22,7 +22,6 @@ class PokemonDetailBloc extends Bloc<PokemonDetailEvent, PokemonDetailState> {
         final response = await repository.getPokemonDetail(event.pokemonName);
         yield LoadedPokemonDetailState(response);
       }catch(e) {
-        print(e);
         yield ErrorPokemonDetailState();
       }
     }

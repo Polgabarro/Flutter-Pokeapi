@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokedex/generated/i18n.dart';
 import 'package:pokedex/models/pokemon_simple_model.dart';
+import 'package:pokedex/models/pokemon_types_model.dart';
 import 'package:pokedex/pages/containers/detail/detail_page.dart';
+import 'package:pokedex/pages/containers/filter/filter-modal.dart';
 import 'package:pokedex/pages/containers/list/bloc/bloc.dart';
 import 'package:pokedex/pages/widgets/pokemon_item.dart';
 import 'package:pokedex/repositories/poke_api_repository.dart';
 import "package:pokedex/utils/extensions.dart";
+import 'package:pokedex/utils/utils.dart';
 
 class PokemonList extends StatelessWidget {
   @override
@@ -54,11 +57,32 @@ class _PokemonListState extends State<PokemonListContent> {
               width: 10, height: 10, fit: BoxFit.cover),
         ),
         centerTitle: false,
-        title: Text(S.of(context).title),
+        title: BlocBuilder<PokemonListBloc, ListBlocState>(
+            builder: (context, state) {
+           if(state is PokemonListLoaded && state.type != null)  {
+             return Text(S.of(context).title + ' ' + state.type.name.capitalize());
+           }
+          return Text(S.of(context).title);
+        }),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.filter_list),
-            onPressed: () {},
+            onPressed: () async {
+              final PokeType currentType =
+                  (_pokemonListBloc.state as PokemonListLoaded)?.type;
+              final PokeType newType = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (context) =>
+                          FilterModal(selectedType: currentType)));
+              print(newType);
+              if (newType != null) {
+                _pokemonListBloc.add(GetPokemonsByType(type: newType));
+              } else {
+                _pokemonListBloc.add(GetPokemonsList(reset: true));
+              }
+            },
           )
         ],
       ),
@@ -100,14 +124,15 @@ class _PokemonListState extends State<PokemonListContent> {
               return PokemonItem(
                   onTap: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PokemonDetail(pokemonName: pokemonList[index].name, id: (index + 1))
-                      )
-                    );
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PokemonDetail(
+                                pokemonName: pokemonList[index].name,
+                                id: getIdByPokemonUrl(
+                                    pokemonList[index].url))));
                   },
                   imageUrl:
-                      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png',
+                      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${getIdByPokemonUrl(pokemonList[index].url)}.png',
                   pokemonName: pokemonList[index].name.capitalize());
             } else {
               return buildLoading();
