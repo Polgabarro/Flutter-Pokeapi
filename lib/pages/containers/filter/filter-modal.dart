@@ -8,7 +8,7 @@ import "package:pokedex/utils/extensions.dart";
 
 class FilterModal extends StatefulWidget {
 
-  PokeType selectedType;
+  final PokeType selectedType;
 
   FilterModal({this.selectedType});
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex/pages/containers/detail/detail_page.dart';
-import 'package:pokedex/pages/containers/list/list_page.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'generated/i18n.dart';
 import 'utils/routes.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -12,7 +12,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      localizationsDelegates: [S.delegate],
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        S.delegate],
       supportedLocales: S.delegate.supportedLocales,
       theme: ThemeData(
       primarySwatch: Colors.blue,

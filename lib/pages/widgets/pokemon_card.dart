@@ -59,7 +59,7 @@ class PokemonCard extends StatelessWidget {
             leading: Icon(
               Icons.sd_storage,
             ),
-            title: Text('${(pokemonModel?.weight ?? ' ')} kg'),
+            title: Text('${(pokemonModel?.height ?? ' ')} m'),
           ) : buildItemSkeleton()
         ],
       ),

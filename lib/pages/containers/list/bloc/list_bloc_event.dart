@@ -7,8 +7,8 @@ abstract class ListBlocEvent extends Equatable {
 
 class GetPokemonsList extends ListBlocEvent {
 
-  int nextItem;
-  bool reset;
+  final int nextItem;
+  final bool reset;
 
   GetPokemonsList({this.nextItem = 0, this.reset = false});
 
@@ -18,7 +18,7 @@ class GetPokemonsList extends ListBlocEvent {
 
 class GetPokemonsByType extends ListBlocEvent {
 
-  PokeType type;
+  final PokeType type;
 
   GetPokemonsByType({this.type});
 
